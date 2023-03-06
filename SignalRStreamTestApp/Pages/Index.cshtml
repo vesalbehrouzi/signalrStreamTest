@@ -1,0 +1,63 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <div class="messages-contianer">
+        <ul id="messagesList">
+        </ul>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/testhub")
+            .configureLogging(signalR.LogLevel.Information)
+            .build();
+
+        async function start() {
+            try {
+                await connection.start();
+                console.log("SignalR Connected.");
+            } catch (err) {
+                console.log(err);
+                setTimeout(start, 5000);
+            }
+        };
+
+        connection.onclose(async () => {
+            await start();
+        });
+
+        // Start the connection.
+        start().then(v=>{
+            subscribeToStream();
+        });
+
+
+        async function subscribeToStream() {
+            connection.stream("TestStrteam")
+                .subscribe({
+                    next: (item) => {
+                        var li = document.createElement("li");
+                        li.textContent = item;
+                        document.getElementById("messagesList").appendChild(li);
+                    },
+                    complete: () => {
+                        var li = document.createElement("li");
+                        li.textContent = "Stream completed";
+                        document.getElementById("messagesList").appendChild(li);
+                    },
+                    error: (err) => {
+                        var li = document.createElement("li");
+                        li.textContent = err;
+                        document.getElementById("messagesList").appendChild(li);
+                    },
+                });
+        }
+    </script>
+}
