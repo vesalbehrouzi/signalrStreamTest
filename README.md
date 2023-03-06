@@ -1,5 +1,5 @@
 # signalrStreamTest
-Simple tets application for streaming in Asp.Net Core With SignalR
+Simple test application for streaming in Asp.Net Core With SignalR
 
 to run the test application using docker, run this commands in the root of project:
 ```
